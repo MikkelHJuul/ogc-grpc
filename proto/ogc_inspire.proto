@@ -1,0 +1,191 @@
+
+syntax = "proto2";
+
+package org.ogc;
+
+// options for java
+//include for google stuff
+// validation via envoyproxy_proto_validate-noget
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+  info: {
+    title: "go-ws-api";
+    version: "1.0";
+    contact: {
+      name: "go-ws-api";
+      url: "https://github.com/mch1307/go-ws-api";
+      email: "none@example.com";
+    };
+  };
+  schemes: HTTP;
+  schemes: HTTPS;
+  consumes: "application/json";
+  produces: "application/json";
+};
+
+service OGCInspireService {
+
+  rpc ItemStream(stream FeatureRequest) returns (stream Feature); //long-lived stream
+
+  rpc ItemsAsCollection(stream FeatureRequest) returns (FeatureCollection);
+
+  rpc Items(FeatureCollectionRequest) returns (stream Feature);
+
+  rpc Item(FeatureRequest) returns (Feature);
+
+  rpc OGCLandingPage(google.protobuf.empty) returns (OGCBaseResponse) {
+    option (google.api.http) = { get: "v2/{dataName}" };
+  }
+
+  rpc OGCConformance(OGCBaseRequest) returns (OGCConformanceResponse) {
+    option (google.api.http) = { get: "v2/{dataName}/conformance" };
+  }
+
+  rpc OGCCollections(OGCBaseRequest) returns (OGCCollectionsResponse) {
+    option (google.api.http) = { get: "v2/{dataName}/collections" };
+  }
+
+  rpc OGCCollection(CollectionRequest) returns (OGCCollection) {
+    option (google.api.http) = { get: "v2/{dataName}/collections/{collection}" };
+  }
+
+  rpc OGCItems(FeatureCollectionRequest) returns (FeatureCollection) {
+      option (google.api.http) = { get: "v2/{dataName}/collections/{collection}/items" };
+  }
+
+  rpc OGCItem(FeatureRequest) returns (OGCFeature) {
+    option (google.api.http) = { get: "v2/{dataName}/collections/{collection}/items/{id}" };
+  }
+}
+
+enum DATA_NAME {
+  meteorologicaldata = 1;
+  oceanographicdata = 2;
+  lightningdata = 3;
+}
+
+enum COLLECTION {
+  observation = 1;
+  station = 2;
+  sensordata = 300;
+}
+
+enum PERIOD {
+  latest = 1;
+  latest_10_minutes = 2;
+  latest_hour = 3;
+  latest_day = 4;
+  latest_week = 5;
+  latest_month = 6;
+}
+
+enum SORTORDER {
+  timeDESC = 1;
+}
+
+enum CRS {
+  crs_84 = 1;
+}
+
+message CollectionRequest {
+  required DATA_NAME dataName = 1;
+  required COLLECTION collection = 2;
+}
+
+message FeatureCollectionRequest {
+  required DATA_NAME dataName = 1;
+  required COLLECTION collection = 2;
+
+  optional string datetime = 3;  // datetime searching as specified in http://docs.opengeospatial.org/is/17-069r3/17-069r3.html#_parameter_datetime an dates as specified in RFC3339 https://tools.ietf.org/html/rfc3339
+  optional PERIOD period = 4;
+  optional uint32 limit = 5;
+  optional uint32 offset = 6;
+  optional SORTORDER sortorder = 7;
+  repeated int32 bbox = 8;  // string or repeated int32 (reserves ordering?)
+  optional CRS bbox_crs = 9;  // coordinate reference system
+
+  // meteorological and oceanographic
+  optional string stationId = 100;
+  optional string parameterId = 101;
+  // stations
+  optional string status = 150;
+
+  // lightning and -station
+  optional uint32 type = 300;
+  optional uint32 heartbeatMaxAge = 350;
+
+  // suggested
+  optional bool unlimited = 1000; // keep a stream open until receiver stops (does it make sense wrt MapR?)
+}
+
+message FeatureCollection {
+  required string type = 1; //FeatureCollection
+  repeated Feature features = 2;
+  required string timeStamp = 3; //RFC3339 (the google wkt requires proto3, which doesn't support ESP yet)
+  required int32 numberReturned = 4;
+  repeated Link links = 5;
+}
+
+message Feature {
+  required string type = 1;
+  required string id = 2;
+  required google.protobuf.Any properties = 3;
+  required Geometry geometry = 4;
+}
+
+message Geometry { //maybe restructure??
+  required string type = 1;
+  repeated float coordinates = 2;
+}
+
+message BBox {
+
+}
+
+message OGCFeature { //wrapper of single feature for OGC
+  required string type = 1;
+  required string id = 2;
+  required google.protobuf.Any properties = 3;
+  required Geometry geometry = 4;
+  repeated Link links = 5;
+}
+
+
+message FeatureRequest {
+  required DATA_NAME dataName = 1;
+  required COLLECTION collection = 2;
+  required string id = 3;
+}
+
+
+message OGCBaseRequest {
+  required DATA_NAME dataName = 1;
+}
+
+message OGCBaseResponse {
+  repeated Link links = 1;
+}
+
+message Link {
+  required string href = 1;
+  required string rel = 2;
+  required string type = 3;
+  required string title = 4;
+}
+
+message OGCConformanceResponse {
+  repeated string conformsTo = 1;
+}
+
+message OGCCollectionsResponse {
+  repeated Link links = 1;
+  repeated OGCCollection collections = 2;
+}
+
+message OGCCollection {
+  required string id = 1;
+  required string title = 2;
+  required string description = 3;
+  repeated Link links = 4;
+  required string name = 5;
+}
