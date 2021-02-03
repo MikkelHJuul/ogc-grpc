@@ -9,12 +9,12 @@ package org.ogc;
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
   info: {
-    title: "go-ws-api";
+    title: "ogc-inspire-api";
     version: "1.0";
     contact: {
-      name: "go-ws-api";
-      url: "https://github.com/mch1307/go-ws-api";
-      email: "none@example.com";
+      name: "someone";
+      url: "https://ogc.org/something/something";
+      email: "noone@example.com";
     };
   };
   schemes: HTTP;
@@ -34,27 +34,27 @@ service OGCInspireService {
   rpc Item(FeatureRequest) returns (Feature);
 
   rpc OGCLandingPage(google.protobuf.empty) returns (OGCBaseResponse) {
-    option (google.api.http) = { get: "v2/{dataName}" };
+    option (google.api.http) = { get: "{dataName}" };
   }
 
   rpc OGCConformance(OGCBaseRequest) returns (OGCConformanceResponse) {
-    option (google.api.http) = { get: "v2/{dataName}/conformance" };
+    option (google.api.http) = { get: "{dataName}/conformance" };
   }
 
   rpc OGCCollections(OGCBaseRequest) returns (OGCCollectionsResponse) {
-    option (google.api.http) = { get: "v2/{dataName}/collections" };
+    option (google.api.http) = { get: "{dataName}/collections" };
   }
 
   rpc OGCCollection(CollectionRequest) returns (OGCCollection) {
-    option (google.api.http) = { get: "v2/{dataName}/collections/{collection}" };
+    option (google.api.http) = { get: "{dataName}/collections/{collection}" };
   }
 
   rpc OGCItems(FeatureCollectionRequest) returns (FeatureCollection) {
-      option (google.api.http) = { get: "v2/{dataName}/collections/{collection}/items" };
+      option (google.api.http) = { get: "{dataName}/collections/{collection}/items" };
   }
 
   rpc OGCItem(FeatureRequest) returns (OGCFeature) {
-    option (google.api.http) = { get: "v2/{dataName}/collections/{collection}/items/{id}" };
+    option (google.api.http) = { get: "{dataName}/collections/{collection}/items/{id}" };
   }
 }
 
