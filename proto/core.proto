@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package org.ogc.api.grpc.core;
+
+import public "google/protobuf/any.proto";
+import public "google/protobuf/timestamp.proto";
+
+message Feature {
+  string type = 1;
+  string id = 2;
+  google.protobuf.Any properties = 3;
+  Geometry geometry = 4;
+}
+
+message Geometry { //maybe restructure??
+  string type = 1;
+  repeated float coordinates = 2;
+}
+
+
+enum CRS {
+  crs_84 = 0;
+}

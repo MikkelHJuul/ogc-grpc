@@ -1,0 +1,58 @@
+
+syntax = "proto3";
+
+package org.ogc.api.grpc.proxy;
+
+/*  Add your Swagger!
+
+resources:
+https://github.com/grpc-ecosystem/grpc-gateway
+https://github.com/grpc-ecosystem/grpc-gateway/blob/master/examples/internal/proto/examplepb/a_bit_of_everything.proto
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+  info: {
+    title: "ogc-inspire-api";
+    version: "1.0";
+    contact: {
+      name: "someone";
+      url: "https://ogc.org/something/something";
+      email: "noone@example.com";
+    };
+  };
+  schemes: HTTP;
+  schemes: HTTPS;
+  consumes: "application/json";
+  produces: "application/json";
+};
+*/
+import "ogc_meta.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+service OGCInspireService {
+
+  rpc OGCLandingPage(googlstringe.protobuf.Empty) returns (OGCBaseResponse) {
+    option (google.api.http) = { get: "/" };
+  }
+
+  rpc OGCConformance(google.protobuf.Empty) returns (OGCConformanceResponse) {
+    option (google.api.http) = { get: "conformance" };
+  }
+
+  rpc OGCCollections(google.protobuf.Empty) returns (OGCCollectionsResponse) {
+    option (google.api.http) = { get: "collections" };
+  }
+
+  rpc OGCCollection(OGCCollectionRequest) returns (OGCCollection) {
+    option (google.api.http) = { get: "collections/{collection}" };
+  }
+
+  rpc OGCItems(OGCFeatureCollectionRequest) returns (OGCFeatureCollectionResponse) {
+      option (google.api.http) = { get: "collections/{collection}/items" };
+  }
+
+  rpc OGCItem(OGCFeatureRequest) returns (OGCFeatureCollectionResponse) {
+    option (google.api.http) = { get: "collections/{collection}/items/{id}" };
+  }
+}

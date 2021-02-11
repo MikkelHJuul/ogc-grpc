@@ -1,0 +1,19 @@
+
+syntax = "proto3";
+
+package org.ogc.api.grpc.core;
+
+import "core_meta.proto";
+import "core.proto";
+
+service OGCInspireService {
+
+  rpc Item(FeatureRequest) returns (Feature);
+
+  rpc ItemStream(stream FeatureRequest) returns (stream Feature); //long-lived stream
+
+
+  rpc Items(FeatureCollectionRequest) returns (stream Feature);
+
+}
+
