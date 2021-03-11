@@ -7,9 +7,9 @@ import public "google/protobuf/timestamp.proto";
 
 message Feature {
   string type = 1;
-  string id = 2;
+  Geometry geometry = 2;
   google.protobuf.Any properties = 3;
-  Geometry geometry = 4;
+  string id = 100;
 }
 
 message Geometry { //maybe restructure??

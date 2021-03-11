@@ -32,7 +32,7 @@ import "google/api/annotations.proto";
 
 service OGCInspireService {
 
-  rpc OGCLandingPage(googlstringe.protobuf.Empty) returns (OGCBaseResponse) {
+  rpc OGCLandingPage(google.protobuf.Empty) returns (OGCBaseResponse) {
     option (google.api.http) = { get: "/" };
   }
 
