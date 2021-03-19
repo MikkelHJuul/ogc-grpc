@@ -10,8 +10,7 @@ service OGCInspireService {
 
   rpc Item(FeatureRequest) returns (Feature);
 
-  rpc ItemStream(stream FeatureRequest) returns (stream Feature); //long-lived stream
-
+  rpc ItemStream(stream FeatureRequest) returns (stream Feature);
 
   rpc Items(FeatureCollectionRequest) returns (stream Feature);
 

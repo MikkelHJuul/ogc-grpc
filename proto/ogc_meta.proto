@@ -4,9 +4,23 @@ syntax = "proto3";
 package org.ogc.api.grpc.proxy;
 
 import public "core.proto";
+import public "core_meta.proto";
 
-message OGCBaseResponse {
+message OGCLandingPageResponse {
   repeated OGCLink links = 1;
+}
+
+message OGCExtent {
+  message OGCSpatial {
+    repeated double coordinates = 1; //min 4 max 6
+  }
+
+  repeated OGCSpatial spatial = 1; //min 1
+
+  message OGCTemporal {
+    repeated google.protobuf.Timestamp times = 1; //todo no name... min 1/max 2
+  }
+  repeated OGCTemporal temporal = 5; // min 1
 }
 
 message OGCLink {
@@ -14,6 +28,18 @@ message OGCLink {
   string rel = 2;
   string type = 3;
   string title = 4;
+  string hreflang = 5;
+  int32 length = 10;
+}
+
+message OGCCollection {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  repeated OGCLink links = 4;
+  string name = 5;
+  OGCExtent extent = 10;
+  repeated string crs = 20;  //<< enum-ish type
 }
 
 message OGCConformanceResponse {
@@ -25,36 +51,25 @@ message OGCCollectionsResponse {
   repeated OGCCollection collections = 2;
 }
 
-message OGCCollection {
-  string id = 1;
-  string title = 2;
-  string description = 3;
-  repeated OGCLink links = 4;
-  string name = 5;
-}
 
 message OGCCollectionRequest {
-  string collection = 2;
-}
-
-message OGCFeatureCollectionRequest {
   string collection = 1;
-
-  google.protobuf.Timestamp datetime = 10;  // datetime searching as specified in http://docs.opengeospatial.org/is/17-069r3/17-069r3.html#_parameter_datetime an dates as specified in RFC3339 https://tools.ietf.org/html/rfc3339
-  repeated int32 bbox = 20;  // string or repeated int32 (reserves ordering?)
-  CRS bbox_crs = 21;  // coordinate reference system
-
 }
 
-message OGCFeatureRequest {
-  string collection = 1;
-  string id = 2;
-}
 
 message OGCFeatureCollectionResponse {
   string type = 1;
-  repeated Feature features = 2;
-  google.protobuf.Timestamp timeStamp = 3;
-  int32 numberReturned = 4;
-  repeated OGCLink links = 5;
+  repeated core.Feature features = 2;
+  google.protobuf.Timestamp timeStamp = 5;
+  int32 numberReturned = 6;
+  int32 numberMatched = 7;
+  repeated OGCLink links = 10;
+}
+
+//
+message OGCFeature {
+  core.Feature feature = 1; //embed?!
+
+  google.protobuf.Timestamp timeStamp = 500;
+  repeated OGCLink links = 600;
 }

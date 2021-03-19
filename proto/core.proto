@@ -12,12 +12,8 @@ message Feature {
   string id = 100;
 }
 
-message Geometry { //maybe restructure??
+message Geometry {
   string type = 1;
-  repeated float coordinates = 2;
+  repeated double coordinates = 2;
 }
 
-
-enum CRS {
-  crs_84 = 0;
-}
